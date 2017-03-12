@@ -12,6 +12,12 @@
 #include <memory>
 
 template<class T, class Alloc = std::allocator<T>>
+class RingBuffer;
+
+template <class T, class Alloc = std::allocator<T> >
+void swap(RingBuffer<T,Alloc>&, RingBuffer<T,Alloc>&) noexcept;
+
+template<class T, class Alloc>
 class RingBuffer
 {
 public:
@@ -24,12 +30,28 @@ public:
     
     RingBuffer(size_type capacity, const Alloc &alloc = Alloc());
     
+    reference front();
+    const_reference front() const;
+    reference back();
+    const_reference back() const;
+    
+    void swap(RingBuffer& other) noexcept;
+    size_type size() const;
+    size_type capacity() const;
+    bool empty() const;
+    
 private:
     T* m_data;
+    T* m_start;
+    T* m_end;
+    
     size_type m_capacity;
+    size_type m_size;
     Alloc m_allocator;
     
 };
+
+
 
 #include "RingBuffer.hpp"
 
