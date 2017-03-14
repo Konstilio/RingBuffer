@@ -34,6 +34,13 @@ public:
     const_reference front() const;
     reference back();
     const_reference back() const;
+    reference operator[](size_type);
+    const_reference operator[](size_type) const;
+    
+    void push_back(const T&);
+    void push_back(T&&);
+    template<class ...Args>
+    void emplace_back(Args&&...);
     
     void swap(RingBuffer& other) noexcept;
     size_type size() const;
@@ -41,10 +48,12 @@ public:
     bool empty() const;
     
 private:
-    T* m_data;
-    T* m_start;
-    T* m_end;
+    template<class... Args>
+    void push_back_imp(Args&&... args);
     
+    T* m_data;
+
+    size_type m_start;
     size_type m_capacity;
     size_type m_size;
     Alloc m_allocator;
