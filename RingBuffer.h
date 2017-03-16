@@ -29,6 +29,9 @@ public:
     typedef typename Alloc::size_type size_type;
     
     RingBuffer(size_type capacity, const Alloc &alloc = Alloc());
+    RingBuffer(const RingBuffer &other);
+    RingBuffer(RingBuffer &&other);
+    ~RingBuffer();
     
     reference front();
     const_reference front() const;
@@ -41,6 +44,7 @@ public:
     void push_back(T&&);
     template<class ...Args>
     void emplace_back(Args&&...);
+    void pop_front();
     
     void swap(RingBuffer& other) noexcept;
     size_type size() const;
