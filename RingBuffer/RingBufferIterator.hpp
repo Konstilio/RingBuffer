@@ -81,3 +81,37 @@ bool RB_IT_IMP::operator>=(const iteratorImp &other) const
 {
     return !(operator<(other));
 }
+
+template <class T, class Alloc>
+template<class Pointer, class Reference>
+RB_IT_IMP &RB_IT_IMP::operator++()
+{
+    ++m_current;
+    return *this;
+}
+
+template <class T, class Alloc>
+template<class Pointer, class Reference>
+RB_IT_IMP &RB_IT_IMP::operator++(int)
+{
+    auto temp = *this;
+    ++m_current;
+    return temp;
+}
+
+template <class T, class Alloc>
+template<class Pointer, class Reference>
+RB_IT_IMP &RB_IT_IMP::operator--()
+{
+    --m_current;
+    return *this;
+}
+
+template <class T, class Alloc>
+template<class Pointer, class Reference>
+RB_IT_IMP &RB_IT_IMP::operator--(int)
+{
+    auto temp = *this;
+    --m_current;
+    return temp;
+}

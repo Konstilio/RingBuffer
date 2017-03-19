@@ -92,9 +92,9 @@ public:
         bool operator>=(const iteratorImp&) const;
         
         iteratorImp& operator++();
-        iteratorImp operator++(int); //optional
-        iteratorImp& operator--(); //optional
-        iteratorImp operator--(int); //optional
+        iteratorImp operator++(int);
+        iteratorImp& operator--();
+        iteratorImp operator--(int);
         iteratorImp& operator+=(size_type); //optional
         iteratorImp operator+(size_type) const; //optional
         friend iteratorImp operator+(size_type, const iteratorImp&); //optional
