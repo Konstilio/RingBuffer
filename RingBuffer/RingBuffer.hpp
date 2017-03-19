@@ -272,3 +272,5 @@ bool operator!=(const RingBuffer<T, Alloc>& left, const RingBuffer<T, Alloc>& ri
 {
     return !(left == right);
 }
+
+#undef RB_IMP

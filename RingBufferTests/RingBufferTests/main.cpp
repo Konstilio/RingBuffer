@@ -77,6 +77,17 @@ TEST (RingBuffer, createTests) {
     EXPECT_NE(rb, rbm);
 }
 
+TEST (RingBuffer, iterTests) {
+    RingBuffer<Testable>::iterator emptyIt1;
+    RingBuffer<Testable>::iterator emptyIt2;
+    EXPECT_TRUE(emptyIt1 == emptyIt2);
+    EXPECT_FALSE(emptyIt1 != emptyIt2);
+    EXPECT_TRUE(emptyIt1 <= emptyIt2);
+    EXPECT_FALSE(emptyIt1 < emptyIt2);
+    EXPECT_TRUE(emptyIt1 >= emptyIt2);
+    EXPECT_FALSE(emptyIt1 > emptyIt2);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

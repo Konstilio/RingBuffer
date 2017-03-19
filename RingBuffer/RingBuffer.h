@@ -63,41 +63,57 @@ public:
     size_type capacity() const;
     bool empty() const;
     
-    class iterator {
+    template<class Pointer, class Reference>
+    class iteratorImp {
     public:
-        typedef typename A::difference_type difference_type;
-        typedef typename A::value_type value_type;
-        typedef typename A::reference reference;
-        typedef typename A::pointer pointer;
+        typedef typename Alloc::difference_type difference_type;
+        typedef typename Alloc::value_type value_type;
+        typedef Reference reference;
+        typedef Pointer pointer;
         typedef std::random_access_iterator_tag iterator_category;
+        friend class RingBuffer<T, Alloc>;
         
-        iterator();
-        iterator(const iterator&);
-        ~iterator();
+        iteratorImp();
+    private:
+        iteratorImp
+            (
+                T *data
+                , size_type start
+                , size_type capacity
+                , size_type current = 0
+            );
+    public:
+
+        bool operator==(const iteratorImp&) const;
+        bool operator!=(const iteratorImp&) const;
+        bool operator<(const iteratorImp&) const;
+        bool operator>(const iteratorImp&) const;
+        bool operator<=(const iteratorImp&) const;
+        bool operator>=(const iteratorImp&) const;
         
-        iterator& operator=(const iterator&);
-        bool operator==(const iterator&) const;
-        bool operator!=(const iterator&) const;
-        bool operator<(const iterator&) const; //optional
-        bool operator>(const iterator&) const; //optional
-        bool operator<=(const iterator&) const; //optional
-        bool operator>=(const iterator&) const; //optional
+        iteratorImp& operator++();
+        iteratorImp operator++(int); //optional
+        iteratorImp& operator--(); //optional
+        iteratorImp operator--(int); //optional
+        iteratorImp& operator+=(size_type); //optional
+        iteratorImp operator+(size_type) const; //optional
+        friend iteratorImp operator+(size_type, const iteratorImp&); //optional
+        iteratorImp& operator-=(size_type); //optional
+        iteratorImp operator-(size_type) const; //optional
+        difference_type operator-(iteratorImp) const; //optional
         
-        iterator& operator++();
-        iterator operator++(int); //optional
-        iterator& operator--(); //optional
-        iterator operator--(int); //optional
-        iterator& operator+=(size_type); //optional
-        iterator operator+(size_type) const; //optional
-        friend iterator operator+(size_type, const iterator&); //optional
-        iterator& operator-=(size_type); //optional
-        iterator operator-(size_type) const; //optional
-        difference_type operator-(iterator) const; //optional
+        Reference operator*() const;
+        Pointer operator->() const;
+        Reference operator[](size_type) const; //optional
         
-        reference operator*() const;
-        pointer operator->() const;
-        reference operator[](size_type) const; //optional
+    private:
+        Pointer m_rbData;
+        
+        size_type m_rbStart;
+        size_type m_rbCapacity;
+        size_type m_current;
     };
+    typedef iteratorImp<T*, reference> iterator;
     
 private:
     template<class... Args>
@@ -115,5 +131,6 @@ private:
 
 
 #include "RingBuffer.hpp"
+#include "RingBufferIterator.hpp"
 
 #endif /* RingBuffer_h */
