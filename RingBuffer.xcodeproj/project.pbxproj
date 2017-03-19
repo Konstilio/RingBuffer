@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F17507371E7EB264002E123B /* RingBufferIterator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F17507361E7EB264002E123B /* RingBufferIterator.hpp */; };
 		F1F01B501E75B86300902F90 /* RingBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = F1F01B391E75B61300902F90 /* RingBuffer.h */; };
 		F1F01B521E75BA6B00902F90 /* RingBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F1F01B511E75BA6B00902F90 /* RingBuffer.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F17507361E7EB264002E123B /* RingBufferIterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RingBufferIterator.hpp; sourceTree = "<group>"; };
 		F1F01B2B1E75B59700902F90 /* libRingBuffer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRingBuffer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1F01B391E75B61300902F90 /* RingBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RingBuffer.h; sourceTree = "<group>"; };
 		F1F01B511E75BA6B00902F90 /* RingBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RingBuffer.hpp; sourceTree = "<group>"; };
@@ -47,6 +49,7 @@
 		F1F01B2D1E75B59700902F90 /* RingBuffer */ = {
 			isa = PBXGroup;
 			children = (
+				F17507361E7EB264002E123B /* RingBufferIterator.hpp */,
 				F1F01B511E75BA6B00902F90 /* RingBuffer.hpp */,
 				F1F01B391E75B61300902F90 /* RingBuffer.h */,
 			);
@@ -61,6 +64,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1F01B521E75BA6B00902F90 /* RingBuffer.hpp in Headers */,
+				F17507371E7EB264002E123B /* RingBufferIterator.hpp in Headers */,
 				F1F01B501E75B86300902F90 /* RingBuffer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,6 +249,7 @@
 				F1F01B381E75B59700902F90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

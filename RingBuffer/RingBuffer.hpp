@@ -36,6 +36,13 @@ RingBuffer<T, Alloc>::RingBuffer(const RingBuffer &other)
 }
 
 template<class T, class Alloc>
+RB_IMP &RingBuffer<T, Alloc>::operator=(const RingBuffer &other)
+{
+    auto temp = other;
+    swap(temp);
+}
+
+template<class T, class Alloc>
 RingBuffer<T, Alloc>::RingBuffer(RingBuffer &&other)
     : m_capacity(other.m_capacity)
     , m_allocator(std::move(other.m_allocator))
@@ -50,20 +57,18 @@ RingBuffer<T, Alloc>::RingBuffer(RingBuffer &&other)
     other.m_size = 0;
 }
 
+template<class T, class Alloc>
+RB_IMP &RingBuffer<T, Alloc>::operator=(RingBuffer &&other)
+{
+    auto temp = std::move(other);
+    swap(temp);
+}
+
 
 template<class T, class Alloc>
 RingBuffer<T, Alloc>::~RingBuffer()
 {
-    for (size_type pos = 0; pos < m_size; ++pos)
-    {
-        auto real_pos = (m_start + pos) % m_capacity;
-        std::allocator_traits<Alloc>::destroy
-        (
-            m_allocator
-            , m_data + real_pos
-        );
-    }
-    
+    clear();
     std::allocator_traits<Alloc>::deallocate
     (
         m_allocator
@@ -122,6 +127,22 @@ typename RB_IMP::const_reference RingBuffer<T, Alloc>::operator[](size_type pos)
 {
     pos = (m_start + pos) % m_capacity;
     return m_data[pos];
+}
+
+template<class T, class Alloc>
+void RingBuffer<T, Alloc>::clear()
+{
+    for (size_type pos = 0; pos < m_size; ++pos)
+    {
+        auto real_pos = (m_start + pos) % m_capacity;
+        std::allocator_traits<Alloc>::destroy
+        (
+            m_allocator
+            , m_data + real_pos
+        );
+    }
+    
+    m_size = 0;
 }
 
 template<class T, class Alloc>
@@ -197,6 +218,7 @@ void RingBuffer<T, Alloc>::push_back_imp(Args&&... args)
             m_allocator
             , m_data + m_start
         );
+        --m_size;
         
         std::allocator_traits<Alloc>::construct
         (
@@ -204,6 +226,7 @@ void RingBuffer<T, Alloc>::push_back_imp(Args&&... args)
             , m_data + m_start
             , std::forward<Args>(args)...
         );
+        ++m_size;
         
         m_start = (m_start + 1) % m_capacity;
     }
@@ -224,4 +247,28 @@ template <class T, class Alloc>
 void swap(RingBuffer<T, Alloc>& left, RingBuffer<T, Alloc>& right) noexcept
 {
     left.swap(right);
+}
+
+// relations operators
+template<class T, class Alloc>
+bool operator==(const RingBuffer<T, Alloc>& left, const RingBuffer<T, Alloc>& right)
+{
+    if (left.m_size != right.m_size)
+        return false;
+    
+    for (typename RingBuffer<T, Alloc>::size_type pos = 0; pos < left.m_size; ++pos)
+    {
+        auto left_pos = (left.m_start + pos) % left.m_capacity;
+        auto right_pos = (right.m_start + pos) % right.m_capacity;
+        if (!(left.m_data[left_pos] == right.m_data[right_pos]))
+            return false;
+    }
+    
+    return true;
+}
+
+template<class T, class Alloc>
+bool operator!=(const RingBuffer<T, Alloc>& left, const RingBuffer<T, Alloc>& right)
+{
+    return !(left == right);
 }

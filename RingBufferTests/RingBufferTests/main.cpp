@@ -25,21 +25,56 @@ public:
         ++counter;
     }
     
-    Testable()
+    Testable(Testable &&other)
+        : m_i(other.m_i)
+    {
+        ++counter;
+        other.m_i = nullptr;
+        std::cout << "Testable(&&)" << std::endl;
+    }
+    
+    ~Testable()
     {
         std::cout << "~Testable()" << --counter << std::endl;
         delete m_i;
         m_i = nullptr;
     }
     
+    int getVal() const
+    {
+        return *m_i;
+    }
     
 private:
     static int counter;
     int* m_i = 0;
 };
 
-TEST (SquareRootTest, PositiveNos) {
-    EXPECT_EQ (18.0, 0.0);
+bool operator==(const Testable &right, const Testable &left)
+{
+    return right.getVal() == left.getVal();
+}
+
+int Testable::counter = 0;
+
+TEST (RingBuffer, createTests) {
+    RingBuffer<Testable> rb(10);
+    EXPECT_EQ(rb.size(), 0);
+    EXPECT_EQ(rb.capacity(), 10);
+    rb.push_back(Testable(2));
+    EXPECT_EQ(rb.size(), 1);
+    
+    RingBuffer<Testable> rbc = rb;
+    EXPECT_EQ(rbc.size(), 1);
+    EXPECT_EQ(rbc.capacity(), 10);
+    EXPECT_EQ(rbc, rb);
+    
+    RingBuffer<Testable> rbm = std::move(rb);
+    EXPECT_EQ(rb.size(), 0);
+    EXPECT_EQ(rb.capacity(), 0);
+    EXPECT_EQ(rbm.size(), 1);
+    EXPECT_EQ(rbm.capacity(), 10);
+    EXPECT_NE(rb, rbm);
 }
 
 int main(int argc, char **argv) {
