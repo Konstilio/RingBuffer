@@ -86,6 +86,9 @@ TEST (RingBuffer, iterTests) {
     EXPECT_FALSE(emptyIt1 < emptyIt2);
     EXPECT_TRUE(emptyIt1 >= emptyIt2);
     EXPECT_FALSE(emptyIt1 > emptyIt2);
+    
+    auto it = emptyIt1 + 5;
+    it = 5 + emptyIt1;
 }
 
 int main(int argc, char **argv) {

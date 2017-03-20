@@ -95,9 +95,14 @@ public:
         iteratorImp operator++(int);
         iteratorImp& operator--();
         iteratorImp operator--(int);
-        iteratorImp& operator+=(size_type); //optional
-        iteratorImp operator+(size_type) const; //optional
-        friend iteratorImp operator+(size_type, const iteratorImp&); //optional
+        iteratorImp& operator+=(size_type);
+        iteratorImp operator+(size_type) const;
+        
+        friend iteratorImp operator+(size_type pos, const iteratorImp& it)
+        {
+            return iteratorImp(it.m_rbData, it.m_rbStart, it.m_rbCapacity, it.m_current + pos);
+        }
+        
         iteratorImp& operator-=(size_type); //optional
         iteratorImp operator-(size_type) const; //optional
         difference_type operator-(iteratorImp) const; //optional

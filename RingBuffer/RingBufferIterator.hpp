@@ -92,7 +92,7 @@ RB_IT_IMP &RB_IT_IMP::operator++()
 
 template <class T, class Alloc>
 template<class Pointer, class Reference>
-RB_IT_IMP &RB_IT_IMP::operator++(int)
+RB_IT_IMP RB_IT_IMP::operator++(int)
 {
     auto temp = *this;
     ++m_current;
@@ -109,9 +109,41 @@ RB_IT_IMP &RB_IT_IMP::operator--()
 
 template <class T, class Alloc>
 template<class Pointer, class Reference>
-RB_IT_IMP &RB_IT_IMP::operator--(int)
+RB_IT_IMP RB_IT_IMP::operator--(int)
 {
     auto temp = *this;
     --m_current;
     return temp;
 }
+
+template <class T, class Alloc>
+template<class Pointer, class Reference>
+RB_IT_IMP &RB_IT_IMP::operator+=(RB_IMP::size_type pos)
+{
+    m_current += pos;
+    return *this;
+}
+
+template <class T, class Alloc>
+template<class Pointer, class Reference>
+RB_IT_IMP RB_IT_IMP::operator+(RB_IMP::size_type pos) const
+{
+    return iteratorImp(m_rbData, m_rbStart, m_rbCapacity, m_current + pos);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
