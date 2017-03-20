@@ -3,6 +3,7 @@
 
 #define RB_IMP RingBuffer<T, Alloc>
 #define RB_IT_IMP RingBuffer<T, Alloc>::iteratorImp<Pointer, Reference>
+#define RB_IMP_DIFF typename RingBuffer<T, Alloc>::difference_type
 
 template <class T, class Alloc>
 template<class Pointer, class Reference>
@@ -130,6 +131,30 @@ RB_IT_IMP RB_IT_IMP::operator+(RB_IMP::size_type pos) const
 {
     return iteratorImp(m_rbData, m_rbStart, m_rbCapacity, m_current + pos);
 }
+
+template <class T, class Alloc>
+template<class Pointer, class Reference>
+RB_IT_IMP &RB_IT_IMP::operator-=(RB_IMP::size_type pos)
+{
+    m_current -= pos;
+    return *this;
+}
+
+template <class T, class Alloc>
+template<class Pointer, class Reference>
+RB_IT_IMP RB_IT_IMP::operator-(RB_IMP::size_type pos) const
+{
+    return iteratorImp(m_rbData, m_rbStart, m_rbCapacity, m_current - pos);
+}
+
+template <class T, class Alloc>
+template <class Pointer, class Reference>
+RB_IMP_DIFF RB_IT_IMP::operator-(const iteratorImp &other) const
+{
+    return (other.m_rbData - m_rbData) + other.m_current - m_current;
+}
+
+
 
 
 

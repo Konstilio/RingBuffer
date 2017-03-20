@@ -23,6 +23,7 @@ bool operator==(const RingBuffer<T,Alloc> &, const RingBuffer<T,Alloc>&);
 template <class T, class Alloc = std::allocator<T> >
 bool operator!=(const RingBuffer<T,Alloc> &, const RingBuffer<T,Alloc>&);
 
+
 template<class T, class Alloc>
 class RingBuffer
 {
@@ -100,12 +101,12 @@ public:
         
         friend iteratorImp operator+(size_type pos, const iteratorImp& it)
         {
-            return iteratorImp(it.m_rbData, it.m_rbStart, it.m_rbCapacity, it.m_current + pos);
+            return it + pos;
         }
         
-        iteratorImp& operator-=(size_type); //optional
-        iteratorImp operator-(size_type) const; //optional
-        difference_type operator-(iteratorImp) const; //optional
+        iteratorImp& operator-=(size_type);
+        iteratorImp operator-(size_type) const;
+        difference_type operator-(const iteratorImp &) const;
         
         Reference operator*() const;
         Pointer operator->() const;
@@ -132,8 +133,6 @@ private:
     Alloc m_allocator;
     
 };
-
-
 
 #include "RingBuffer.hpp"
 #include "RingBufferIterator.hpp"
