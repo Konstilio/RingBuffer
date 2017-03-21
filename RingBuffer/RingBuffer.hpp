@@ -2,6 +2,8 @@
 #include <stdexcept>
 
 #define RB_IMP RingBuffer<T, Alloc>
+#define RB_ITER_TYPE_IMP typename RingBuffer<T, Alloc>::iterator
+#define RB_CONST_ITER_TYPE_IMP typename RingBuffer<T, Alloc>::const_iterator
 
 template<class T, class Alloc>
 RingBuffer<T, Alloc>::RingBuffer(size_type capacity, const Alloc &alloc)
@@ -271,6 +273,43 @@ template<class T, class Alloc>
 bool operator!=(const RingBuffer<T, Alloc>& left, const RingBuffer<T, Alloc>& right)
 {
     return !(left == right);
+}
+
+// iterators
+template<class T, class Alloc>
+RB_ITER_TYPE_IMP RingBuffer<T, Alloc>::begin()
+{
+    return iterator(m_data, m_start, m_capacity);
+}
+
+template<class T, class Alloc>
+RB_CONST_ITER_TYPE_IMP RingBuffer<T, Alloc>::begin() const
+{
+    return const_iterator(m_data, m_start, m_capacity);
+}
+
+template<class T, class Alloc>
+RB_CONST_ITER_TYPE_IMP RingBuffer<T, Alloc>::cbegin() const
+{
+    return begin();
+}
+
+template<class T, class Alloc>
+RB_ITER_TYPE_IMP RingBuffer<T, Alloc>::end()
+{
+    return iterator(m_data, m_start, m_capacity, m_size);
+}
+
+template<class T, class Alloc>
+RB_CONST_ITER_TYPE_IMP RingBuffer<T, Alloc>::end() const
+{
+    return const_iterator(m_data, m_start, m_capacity, m_size);
+}
+
+template<class T, class Alloc>
+RB_CONST_ITER_TYPE_IMP RingBuffer<T, Alloc>::cend() const
+{
+    return end();
 }
 
 #undef RB_IMP

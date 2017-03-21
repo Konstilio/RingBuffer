@@ -78,18 +78,25 @@ TEST (RingBuffer, createTests) {
 }
 
 TEST (RingBuffer, iterTests) {
-    RingBuffer<Testable>::iterator emptyIt1;
-    RingBuffer<Testable>::iterator emptyIt2;
-    EXPECT_TRUE(emptyIt1 == emptyIt2);
-    EXPECT_FALSE(emptyIt1 != emptyIt2);
-    EXPECT_TRUE(emptyIt1 <= emptyIt2);
-    EXPECT_FALSE(emptyIt1 < emptyIt2);
-    EXPECT_TRUE(emptyIt1 >= emptyIt2);
-    EXPECT_FALSE(emptyIt1 > emptyIt2);
+    {
+        RingBuffer<Testable>::iterator emptyIt1;
+        RingBuffer<Testable>::iterator emptyIt2;
+        EXPECT_TRUE(emptyIt1 == emptyIt2);
+        EXPECT_FALSE(emptyIt1 != emptyIt2);
+        EXPECT_TRUE(emptyIt1 <= emptyIt2);
+        EXPECT_FALSE(emptyIt1 < emptyIt2);
+        EXPECT_TRUE(emptyIt1 >= emptyIt2);
+        EXPECT_FALSE(emptyIt1 > emptyIt2);
     
-    auto it1 = emptyIt1 + 5;
-    auto it2 = 5 + emptyIt1;
-    EXPECT_EQ(it1 - it2, 0);
+        auto it1 = emptyIt1 + 5;
+        auto it2 = 5 + emptyIt1;
+        EXPECT_EQ(it1 - it2, 0);
+    }
+    
+    {
+        RingBuffer<Testable> rb(10);
+        auto it1 = rb.begin();
+    }
 }
 
 int main(int argc, char **argv) {

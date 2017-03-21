@@ -154,6 +154,30 @@ RB_IMP_DIFF RB_IT_IMP::operator-(const iteratorImp &other) const
     return (other.m_rbData - m_rbData) + other.m_current - m_current;
 }
 
+template <class T, class Alloc>
+template <class Pointer, class Reference>
+Reference RB_IT_IMP::operator*() const
+{
+    auto pos = (m_rbStart + m_current) % m_rbCapacity;
+    return m_rbData[pos];
+}
+
+template <class T, class Alloc>
+template <class Pointer, class Reference>
+Pointer RB_IT_IMP::operator->() const
+{
+    auto pos = (m_rbStart + m_current) % m_rbCapacity;
+    return m_rbData + pos;
+}
+
+template <class T, class Alloc>
+template <class Pointer, class Reference>
+Reference RB_IT_IMP::operator[](RB_IMP::size_type pos) const
+{
+    pos = (m_rbStart + m_current + pos) % m_rbCapacity;
+    return m_rbData[pos];
+}
+
 
 
 

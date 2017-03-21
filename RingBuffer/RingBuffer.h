@@ -120,6 +120,14 @@ public:
         size_type m_current;
     };
     typedef iteratorImp<T*, reference> iterator;
+    typedef iteratorImp<const T*, const_reference> const_iterator;
+    
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
     
 private:
     template<class... Args>
