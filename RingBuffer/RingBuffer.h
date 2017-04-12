@@ -10,6 +10,7 @@
 #define RingBuffer_h
 
 #include <memory>
+#include <type_traits>
 
 template<class T, class Alloc = std::allocator<T>>
 class RingBuffer;
@@ -52,6 +53,7 @@ public:
     reference operator[](size_type);
     const_reference operator[](size_type) const;
     
+    void reallocate(size_type);
     void clear();
     void push_back(const T&);
     void push_back(T&&);
@@ -63,7 +65,8 @@ public:
     size_type size() const;
     size_type capacity() const;
     bool empty() const;
-    
+  
+private:
     template<class Pointer, class Reference>
     class iteratorImp {
     public:
@@ -119,11 +122,30 @@ public:
         size_type m_rbCapacity;
         size_type m_current;
     };
-    typedef iteratorImp<T*, reference> iterator;
+    
+public:
+    
+    using iterator = iteratorImp<T*, reference>;
+    using const_iterator =iteratorImp<const T*, const_reference>;
+    
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
+    
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
     
 private:
     template<class... Args>
-    void push_back_imp(Args&&... args);
+    void push_back_non_full_imp(Args&&... args);
+    
+    template<class... Args>
+    void push_back_full_construct_destruct_imp(Args&&... args);
+    
+    
+    template<bool copy_assignable = std::is_copy_assignable<T>::value>
+    void push_back_full_imp(const T& value);
     
     T* m_data;
 

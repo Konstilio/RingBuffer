@@ -1,7 +1,10 @@
 #include "RingBuffer.h"
 #include <stdexcept>
+#include <cassert>
 
 #define RB_IMP RingBuffer<T, Alloc>
+#define RB_IMP_IT typename RingBuffer<T, Alloc>::iterator
+#define RB_IMP_CIT typename RingBuffer<T, Alloc>::const_iterator
 
 template<class T, class Alloc>
 RingBuffer<T, Alloc>::RingBuffer(size_type capacity, const Alloc &alloc)
@@ -31,7 +34,7 @@ RingBuffer<T, Alloc>::RingBuffer(const RingBuffer &other)
     );
     
     for (size_type pos = 0; pos < other.m_size; ++pos)
-        push_back_imp(other[pos]);
+        push_back(other[pos]);
     
 }
 
@@ -130,6 +133,13 @@ typename RB_IMP::const_reference RingBuffer<T, Alloc>::operator[](size_type pos)
 }
 
 template<class T, class Alloc>
+void RingBuffer<T, Alloc>::reallocate(size_type capacity)
+{
+    RingBuffer temp(capacity);
+    swap(temp);
+}
+
+template<class T, class Alloc>
 void RingBuffer<T, Alloc>::clear()
 {
     for (size_type pos = 0; pos < m_size; ++pos)
@@ -148,20 +158,25 @@ void RingBuffer<T, Alloc>::clear()
 template<class T, class Alloc>
 void RingBuffer<T, Alloc>::push_back(const T& value)
 {
-    push_back_imp(value);
+    if (m_size < m_capacity)
+        push_back_non_full_imp(value);
+    else
+        push_back_full_imp(value);
 }
 
 template<class T, class Alloc>
 void RingBuffer<T, Alloc>::push_back(T&& value)
 {
-    push_back_imp(std::move(value));
+    if (m_size < m_capacity)
+        push_back_non_full_imp(value);
 }
 
 template<class T, class Alloc>
 template<class... Args>
 void RingBuffer<T, Alloc>::emplace_back(Args&&... args)
 {
-    push_back_imp(std::forward<Args>(args)...);
+    if (m_size < m_capacity)
+        push_back_non_full_imp(std::forward<Args>(args)...);
 }
 
 template<class T, class Alloc>
@@ -207,39 +222,89 @@ bool RingBuffer<T, Alloc>::empty() const
 }
 
 template<class T, class Alloc>
-template<class... Args>
-void RingBuffer<T, Alloc>::push_back_imp(Args&&... args)
+RB_IMP_IT RingBuffer<T, Alloc>::begin()
 {
-    // TODO make exception contract
-    if (m_size == m_capacity)
+    return iterator(m_data, m_start, m_capacity, 0);
+}
+
+template<class T, class Alloc>
+RB_IMP_CIT RingBuffer<T, Alloc>::begin() const
+{
+    return const_iterator(m_data, m_start, m_capacity, 0);
+}
+
+template<class T, class Alloc>
+RB_IMP_CIT RingBuffer<T, Alloc>::cbegin() const
+{
+    return begin();
+}
+
+template<class T, class Alloc>
+RB_IMP_IT RingBuffer<T, Alloc>::end()
+{
+    return iterator(m_data, m_start, m_capacity, m_size);
+}
+
+template<class T, class Alloc>
+RB_IMP_CIT RingBuffer<T, Alloc>::end() const
+{
+    return const_iterator(m_data, m_start, m_capacity, m_size);
+}
+
+template<class T, class Alloc>
+RB_IMP_CIT RingBuffer<T, Alloc>::cend() const
+{
+    return end();
+}
+
+template<class T, class Alloc>
+template<class... Args>
+void RingBuffer<T, Alloc>::push_back_non_full_imp(Args&&... args)
+{
+    assert(m_size < m_capacity);
+    std::allocator_traits<Alloc>::construct
+    (
+        m_allocator
+        , m_data + ((m_start + m_size) % m_capacity)
+        , std::forward<Args>(args)...
+    );
+    ++m_size;
+}
+
+template<class T, class Alloc>
+template<class... Args>
+void RingBuffer<T, Alloc>::push_back_full_construct_destruct_imp(Args&&... args)
+{
+    assert(m_size < m_capacity);
+    std::allocator_traits<Alloc>::destroy
+    (
+        m_allocator
+        , m_data + m_start
+    );
+    --m_size;
+    
+    std::allocator_traits<Alloc>::construct
+    (
+        m_allocator
+        , m_data + m_start
+        , std::forward<Args>(args)...
+    );
+    ++m_size;
+    
+    m_start = (m_start + 1) % m_capacity;  ++m_size;
+}
+
+template<class T, class Alloc>
+template<bool copy_assignable>
+void RingBuffer<T, Alloc>::push_back_full_imp(const T& value)
+{
+    if (copy_assignable)
     {
-        std::allocator_traits<Alloc>::destroy
-        (
-            m_allocator
-            , m_data + m_start
-        );
-        --m_size;
-        
-        std::allocator_traits<Alloc>::construct
-        (
-            m_allocator
-            , m_data + m_start
-            , std::forward<Args>(args)...
-        );
-        ++m_size;
-        
+        m_data[m_start] = value;
         m_start = (m_start + 1) % m_capacity;
     }
     else
-    {
-        std::allocator_traits<Alloc>::construct
-        (
-            m_allocator
-            , m_data + ((m_start + m_size) % m_capacity)
-            , std::forward<Args>(args)...
-        );
-        ++m_size;
-    }
+       push_back_full_construct_destruct_imp(value);
 }
 
 // swap
