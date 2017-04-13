@@ -1,0 +1,8 @@
+.DS_Store
+RingBuffer.xcodeproj/project.xcworkspace/xcuserdata/okon.xcuserdatad/
+RingBuffer.xcodeproj/xcuserdata/okon.xcuserdatad/
+RingBufferTests/.DS_Store
+RingBufferTests/RingBufferTests.xcodeproj/project.xcworkspace/xcuserdata/okon.xcuserdatad/
+RingBufferTests/RingBufferTests.xcodeproj/xcuserdata/okon.xcuserdatad/
+RingBufferTests/build/
+build/
