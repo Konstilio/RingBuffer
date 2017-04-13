@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F1018E061E9EB6BC00C1A953 /* RingBuffer_PushBack.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F1018E051E9EB6BC00C1A953 /* RingBuffer_PushBack.hpp */; };
 		F17507371E7EB264002E123B /* RingBufferIterator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F17507361E7EB264002E123B /* RingBufferIterator.hpp */; };
 		F1F01B501E75B86300902F90 /* RingBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = F1F01B391E75B61300902F90 /* RingBuffer.h */; };
 		F1F01B521E75BA6B00902F90 /* RingBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F1F01B511E75BA6B00902F90 /* RingBuffer.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F1018E051E9EB6BC00C1A953 /* RingBuffer_PushBack.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RingBuffer_PushBack.hpp; sourceTree = "<group>"; };
 		F17507361E7EB264002E123B /* RingBufferIterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RingBufferIterator.hpp; sourceTree = "<group>"; };
 		F1F01B2B1E75B59700902F90 /* libRingBuffer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRingBuffer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1F01B391E75B61300902F90 /* RingBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RingBuffer.h; sourceTree = "<group>"; };
@@ -49,6 +51,7 @@
 		F1F01B2D1E75B59700902F90 /* RingBuffer */ = {
 			isa = PBXGroup;
 			children = (
+				F1018E051E9EB6BC00C1A953 /* RingBuffer_PushBack.hpp */,
 				F17507361E7EB264002E123B /* RingBufferIterator.hpp */,
 				F1F01B511E75BA6B00902F90 /* RingBuffer.hpp */,
 				F1F01B391E75B61300902F90 /* RingBuffer.h */,
@@ -66,6 +69,7 @@
 				F1F01B521E75BA6B00902F90 /* RingBuffer.hpp in Headers */,
 				F17507371E7EB264002E123B /* RingBufferIterator.hpp in Headers */,
 				F1F01B501E75B86300902F90 /* RingBuffer.h in Headers */,
+				F1018E061E9EB6BC00C1A953 /* RingBuffer_PushBack.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -24,6 +24,13 @@ bool operator==(const RingBuffer<T,Alloc> &, const RingBuffer<T,Alloc>&);
 template <class T, class Alloc = std::allocator<T> >
 bool operator!=(const RingBuffer<T,Alloc> &, const RingBuffer<T,Alloc>&);
 
+template
+    <
+        class T
+        , class Alloc
+        , bool copy = std::is_copy_assignable<T>::value
+    >
+struct rb_help_push_back_full_imp;
 
 template<class T, class Alloc>
 class RingBuffer
@@ -45,6 +52,8 @@ public:
     
     friend bool operator== <> (const RingBuffer &, const RingBuffer &);
     friend bool operator!= <> (const RingBuffer &, const RingBuffer &);
+    
+    friend struct rb_help_push_back_full_imp<T, Alloc>;
     
     reference front();
     const_reference front() const;
@@ -143,8 +152,6 @@ private:
     template<class... Args>
     void push_back_full_construct_destruct_imp(Args&&... args);
     
-    
-    template<bool copy_assignable = std::is_copy_assignable<T>::value>
     void push_back_full_imp(const T& value);
     
     T* m_data;
@@ -156,6 +163,7 @@ private:
     
 };
 
+#include "RingBuffer_PushBack.hpp"
 #include "RingBuffer.hpp"
 #include "RingBufferIterator.hpp"
 

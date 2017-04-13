@@ -275,36 +275,13 @@ template<class T, class Alloc>
 template<class... Args>
 void RingBuffer<T, Alloc>::push_back_full_construct_destruct_imp(Args&&... args)
 {
-    assert(m_size < m_capacity);
-    std::allocator_traits<Alloc>::destroy
-    (
-        m_allocator
-        , m_data + m_start
-    );
-    --m_size;
     
-    std::allocator_traits<Alloc>::construct
-    (
-        m_allocator
-        , m_data + m_start
-        , std::forward<Args>(args)...
-    );
-    ++m_size;
-    
-    m_start = (m_start + 1) % m_capacity;  ++m_size;
 }
 
 template<class T, class Alloc>
-template<bool copy_assignable>
 void RingBuffer<T, Alloc>::push_back_full_imp(const T& value)
 {
-    if (copy_assignable)
-    {
-        m_data[m_start] = value;
-        m_start = (m_start + 1) % m_capacity;
-    }
-    else
-       push_back_full_construct_destruct_imp(value);
+    rb_help_push_back_full_imp<T, Alloc>()(*this, value);
 }
 
 // swap
