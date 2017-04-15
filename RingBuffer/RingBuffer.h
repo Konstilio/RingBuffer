@@ -24,13 +24,24 @@ bool operator==(const RingBuffer<T,Alloc> &, const RingBuffer<T,Alloc>&);
 template <class T, class Alloc = std::allocator<T> >
 bool operator!=(const RingBuffer<T,Alloc> &, const RingBuffer<T,Alloc>&);
 
+namespace Details {
+
 template
     <
         class T
         , class Alloc
         , bool copy = std::is_copy_assignable<T>::value
     >
-struct rb_help_push_back_full_imp;
+struct rb_help_push_back_copy_full_imp;
+    
+template
+    <
+        class T
+        , class Alloc
+        , bool move = std::is_move_assignable<T>::value
+    >
+    struct rb_help_push_back_move_full_imp;    
+}
 
 template<class T, class Alloc>
 class RingBuffer
@@ -52,8 +63,6 @@ public:
     
     friend bool operator== <> (const RingBuffer &, const RingBuffer &);
     friend bool operator!= <> (const RingBuffer &, const RingBuffer &);
-    
-    friend struct rb_help_push_back_full_imp<T, Alloc>;
     
     reference front();
     const_reference front() const;
@@ -144,13 +153,25 @@ public:
     const_iterator cend() const;
     
 private:
+    friend struct Details::rb_help_push_back_copy_full_imp<T, Alloc>;
+    friend struct Details::rb_help_push_back_move_full_imp<T, Alloc>;
+    
+    // when buffer is non full imp
     template<class... Args>
     void push_back_non_full_imp(Args&&... args);
     
-    template<class... Args>
-    void push_back_full_construct_destruct_imp(Args&&... args);
-    
+    // dispatch functions
     void push_back_full_imp(const T& value);
+    void push_back_full_imp(T&& value);
+    
+    // when buffer is full imp
+    void push_back_full_copy_imp(const T& value);
+    void push_back_full_move_imp(T&& value);
+    template<class... Args>
+    void push_back_destruct_construct_full_imp(Args&&... args);
+    
+// data
+private:
     
     T* m_data;
 

@@ -1,36 +1,45 @@
 #include "RingBuffer.h"
 
-template<class T, class Alloc, bool copy>
-struct rb_help_push_back_full_imp
-{
-    void operator()(RingBuffer<T, Alloc> &buffer, const T& value)
+namespace Details {
+        // copy
+    
+    template<class T, class Alloc, bool copy>
+    struct rb_help_push_back_copy_full_imp
     {
-        buffer.m_data[buffer.m_start] = value;
-        buffer.m_start = (buffer.m_start + 1) % buffer.m_capacity;
-    }
-};
-
-template<class T, class Alloc>
-struct rb_help_push_back_full_imp<T, Alloc, false>
-{
-    void operator()(RingBuffer<T, Alloc> &buffer, const T& value)
+        void operator()(RingBuffer<T, Alloc> &buffer, const T& value)
+        {
+            buffer.push_back_full_copy_imp(value);
+        }
+    };
+    
+    template<class T, class Alloc>
+    struct rb_help_push_back_copy_full_imp<T, Alloc, false>
     {
-        std::allocator_traits<Alloc>::destroy
-        (
-         buffer.m_allocator
-         , buffer.m_data + buffer.m_start
-         );
-        --buffer.m_size;
-        
-        std::allocator_traits<Alloc>::construct
-        (
-         buffer.m_allocator
-         , buffer.m_data + buffer.m_start
-         , value
-        //, std::forward<Args>(args)...
-        );
-        ++buffer.m_size;
-        
-        buffer.m_start = (buffer.m_start + 1) % buffer.m_capacity;
-    }
-};
+        void operator()(RingBuffer<T, Alloc> &buffer, const T& value)
+        {
+            buffer.push_back_destruct_construct_full_imp(value);
+        }
+    };
+    
+    // move
+    
+    template<class T, class Alloc, bool move>
+    struct rb_help_push_back_move_full_imp
+    {
+        void operator()(RingBuffer<T, Alloc> &buffer, T&& value)
+        {
+            buffer.push_back_full_move_imp(std::move(value));
+        }
+    };
+    
+    template<class T, class Alloc>
+    struct rb_help_push_back_move_full_imp<T, Alloc, false>
+    {
+        void operator()(RingBuffer<T, Alloc> &buffer, T&& value)
+        {
+            buffer.push_back_destruct_construct_full_imp(std::move(value));
+        }
+    };
+    
+    
+}

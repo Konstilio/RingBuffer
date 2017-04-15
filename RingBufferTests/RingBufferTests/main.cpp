@@ -119,8 +119,7 @@ TEST (RingBuffer, iterTests) {
         EXPECT_EQ(*(--it), 2);
         EXPECT_EQ(*(--it), 1);
         
-        int i6 = 6;
-        rb.push_back(i6);
+        rb.push_back(6);
         it = rb.begin();
         EXPECT_EQ(*it, 2);
         

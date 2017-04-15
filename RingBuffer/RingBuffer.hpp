@@ -169,6 +169,8 @@ void RingBuffer<T, Alloc>::push_back(T&& value)
 {
     if (m_size < m_capacity)
         push_back_non_full_imp(value);
+    else
+        push_back_full_imp(std::move(value));
 }
 
 template<class T, class Alloc>
@@ -271,17 +273,57 @@ void RingBuffer<T, Alloc>::push_back_non_full_imp(Args&&... args)
     ++m_size;
 }
 
-template<class T, class Alloc>
-template<class... Args>
-void RingBuffer<T, Alloc>::push_back_full_construct_destruct_imp(Args&&... args)
-{
-    
-}
+// dispatches
 
 template<class T, class Alloc>
 void RingBuffer<T, Alloc>::push_back_full_imp(const T& value)
 {
-    rb_help_push_back_full_imp<T, Alloc>()(*this, value);
+    Details::rb_help_push_back_copy_full_imp<T, Alloc>()(*this, value);
+}
+
+template<class T, class Alloc>
+void RingBuffer<T, Alloc>::push_back_full_imp(T&& value)
+{
+    Details::rb_help_push_back_move_full_imp<T, Alloc>()(*this, std::move(value));
+}
+
+// push_back imps
+
+template<class T, class Alloc>
+void RingBuffer<T, Alloc>::push_back_full_copy_imp(const T& value)
+{
+    m_data[m_start] = value;
+    m_start = (m_start + 1) % m_capacity;
+}
+
+template<class T, class Alloc>
+void RingBuffer<T, Alloc>::push_back_full_move_imp(T&& value)
+{
+    m_data[m_start] = std::move(value);
+    m_start = (m_start + 1) % m_capacity;
+}
+
+template<class T, class Alloc>
+template<class... Args>
+void RingBuffer<T, Alloc>::push_back_destruct_construct_full_imp(Args&&... args)
+{
+    assert(m_size < m_capacity);
+    std::allocator_traits<Alloc>::destroy
+    (
+        m_allocator
+        , m_data + m_start
+    );
+    --m_size;
+    
+    std::allocator_traits<Alloc>::construct
+    (
+        m_allocator
+        , m_data + m_start
+        , std::forward<Args>(args)...
+    );
+    ++m_size;
+    
+    m_start = (m_start + 1) % m_capacity;
 }
 
 // swap
