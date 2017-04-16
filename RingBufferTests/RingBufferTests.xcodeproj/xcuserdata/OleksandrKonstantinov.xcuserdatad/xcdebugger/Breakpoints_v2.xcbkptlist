@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RingBufferTests/main.cpp"
-            timestampString = "512168208.972904"
+            timestampString = "514020536.4092"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "65"
-            endingLineNumber = "65"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
             landmarkName = "TEST (RingBuffer, createTests)"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RingBufferTests/main.cpp"
-            timestampString = "512168208.972904"
+            timestampString = "514020381.356049"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
-            landmarkName = "Testable(Testable &amp;&amp;other)"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
+            landmarkName = "TestableWithoutCoppyAssign(TestableWithoutCoppyAssign &amp;&amp;other)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

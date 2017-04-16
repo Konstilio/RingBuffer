@@ -179,6 +179,8 @@ void RingBuffer<T, Alloc>::emplace_back(Args&&... args)
 {
     if (m_size < m_capacity)
         push_back_non_full_imp(std::forward<Args>(args)...);
+    else
+        push_back_destruct_construct_full_imp(std::forward<Args>(args)...);
 }
 
 template<class T, class Alloc>
@@ -307,7 +309,7 @@ template<class T, class Alloc>
 template<class... Args>
 void RingBuffer<T, Alloc>::push_back_destruct_construct_full_imp(Args&&... args)
 {
-    assert(m_size < m_capacity);
+    assert(m_size == m_capacity);
     std::allocator_traits<Alloc>::destroy
     (
         m_allocator

@@ -11,34 +11,46 @@
 #include <RingBuffer.h>
 #include <gtest/gtest.h>
 
-class Testable
+class TestableWithoutCoppyAssign
 {
 public:
-    explicit Testable(int i, int j = 0)
+    explicit TestableWithoutCoppyAssign(int i, int j = 0)
         : m_i (new int(i + j))
     {
         ++counter;
     }
     
-    Testable(const Testable &other)
+    TestableWithoutCoppyAssign(const TestableWithoutCoppyAssign &other)
         : m_i(new int(*other.m_i))
     {
+        ++copyConstructs;
         ++counter;
     }
     
-    Testable(Testable &&other)
+    void operator=(const TestableWithoutCoppyAssign& other) = delete;
+    
+    TestableWithoutCoppyAssign(TestableWithoutCoppyAssign &&other)
         : m_i(other.m_i)
     {
         ++counter;
         other.m_i = nullptr;
-        std::cout << "Testable(&&)" << std::endl;
     }
     
-    ~Testable()
+    TestableWithoutCoppyAssign& operator=(TestableWithoutCoppyAssign&& other)
     {
-        std::cout << "~Testable()" << --counter << std::endl;
+        delete m_i;
+        m_i = other.m_i;
+        other.m_i = nullptr;
+        ++moveAssigns;
+        return *this;
+    }
+    
+    ~TestableWithoutCoppyAssign()
+    {
         delete m_i;
         m_i = nullptr;
+        --counter;
+        ++destructs;
     }
     
     int getVal() const
@@ -46,31 +58,65 @@ public:
         return *m_i;
     }
     
+    static int getCounter()
+    {
+        return counter;
+    }
+    
+    static int getCopyConstructs()
+    {
+        return copyConstructs;
+    }
+    
+    static int getMoveAssigns()
+    {
+        return moveAssigns;
+    }
+    
+    static int getDestructs()
+    {
+        return destructs;
+    }
+    
+    static void reset()
+    {
+        moveAssigns = 0;
+        counter = 0;
+        copyConstructs = 0;
+        destructs = 0;
+    }
+    
 private:
     static int counter;
+    static int copyConstructs;
+    static int moveAssigns;
+    static int destructs;
     int* m_i = 0;
 };
 
-bool operator==(const Testable &right, const Testable &left)
+bool operator==(const TestableWithoutCoppyAssign &right, const TestableWithoutCoppyAssign &left)
 {
     return right.getVal() == left.getVal();
 }
 
-int Testable::counter = 0;
+int TestableWithoutCoppyAssign::counter = 0;
+int TestableWithoutCoppyAssign::moveAssigns = 0;
+int TestableWithoutCoppyAssign::copyConstructs = 0;
+int TestableWithoutCoppyAssign::destructs = 0;
 
 TEST (RingBuffer, createTests) {
-    RingBuffer<Testable> rb(10);
+    RingBuffer<TestableWithoutCoppyAssign> rb(10);
     EXPECT_EQ(rb.size(), 0);
     EXPECT_EQ(rb.capacity(), 10);
-    rb.push_back(Testable(2));
+    rb.push_back(TestableWithoutCoppyAssign(2));
     EXPECT_EQ(rb.size(), 1);
     
-    RingBuffer<Testable> rbc = rb;
+    RingBuffer<TestableWithoutCoppyAssign> rbc = rb;
     EXPECT_EQ(rbc.size(), 1);
     EXPECT_EQ(rbc.capacity(), 10);
     EXPECT_EQ(rbc, rb);
     
-    RingBuffer<Testable> rbm = std::move(rb);
+    RingBuffer<TestableWithoutCoppyAssign> rbm = std::move(rb);
     EXPECT_EQ(rb.size(), 0);
     EXPECT_EQ(rb.capacity(), 0);
     EXPECT_EQ(rbm.size(), 1);
@@ -80,8 +126,8 @@ TEST (RingBuffer, createTests) {
 
 TEST (RingBuffer, iterTests) {
     {
-        RingBuffer<Testable>::iterator emptyIt1;
-        RingBuffer<Testable>::iterator emptyIt2;
+        RingBuffer<TestableWithoutCoppyAssign>::iterator emptyIt1;
+        RingBuffer<TestableWithoutCoppyAssign>::iterator emptyIt2;
         EXPECT_TRUE(emptyIt1 == emptyIt2);
         EXPECT_FALSE(emptyIt1 != emptyIt2);
         EXPECT_TRUE(emptyIt1 <= emptyIt2);
@@ -139,11 +185,27 @@ TEST (RingBuffer, iterTests) {
 }
 
 TEST (RingBuffer, behaviourTests) {
-    RingBuffer<int> rb(10);
-    for (int i = 1; i <= 5; ++i)
-        rb.push_back(i);
-    EXPECT_EQ(rb.size(), 5);
-    EXPECT_EQ(rb.back(), 5);
+    TestableWithoutCoppyAssign::reset();
+    constexpr int elemsSize = 4;
+    RingBuffer<TestableWithoutCoppyAssign> rb(elemsSize);
+    for (int i = 1; i <= elemsSize; ++i)
+    {
+        TestableWithoutCoppyAssign t(i,i);
+        rb.push_back(t);
+    }
+    EXPECT_EQ(rb.size(), 4);
+    
+    for (int i = 1; i <= elemsSize; ++i)
+    {
+        TestableWithoutCoppyAssign t(i,i);
+        rb.push_back(t);
+    }
+    EXPECT_EQ(rb.size(), elemsSize);
+    
+    EXPECT_EQ(TestableWithoutCoppyAssign::getCounter(), elemsSize);
+    EXPECT_EQ(TestableWithoutCoppyAssign::getCopyConstructs(), 2 * elemsSize);
+    EXPECT_EQ(TestableWithoutCoppyAssign::getMoveAssigns(), 0);
+    EXPECT_EQ(TestableWithoutCoppyAssign::getDestructs(), 3 * elemsSize);
 }
 
 int main(int argc, char **argv) {
